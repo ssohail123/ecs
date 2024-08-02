@@ -18,9 +18,8 @@ This project demonstrates the deployment of a containerized train booking applic
 
 - **Install Docker**:
   ```bash
-  yum install -y docker
+  yum install docker -y
   systemctl start docker
-  systemctl enable docker
   ```
 
 - **AWS CLI Configuration**: Configure the AWS CLI with your credentials.
