@@ -1,9 +1,9 @@
+
 # Train Booking Application Deployment with AWS ECR & ECS
 
 ## Project Overview
 
 This project demonstrates the deployment of a containerized train booking application using Amazon Web Services (AWS). The deployment leverages Amazon Elastic Container Registry (ECR) for storing Docker images and Amazon Elastic Container Service (ECS) for running and managing containers. The setup also includes an Application Load Balancer (ALB) to distribute traffic and ensure high availability.
-
 
 ## Setup and Deployment
 
@@ -56,6 +56,56 @@ For more details on pushing images to ECR, please refer to the [AWS ECR Document
 
 Once the service is running and the load balancer is configured, the application can be accessed via the DNS name provided by the ALB. This setup ensures that the application is highly available and can handle varying loads efficiently.
 
+## Docker Swarm Setup
+
+Docker Swarm is an alternative to AWS ECS for managing container orchestration. Here's a brief overview of how to set up a Docker Swarm cluster and deploy the application:
+
+### 1. Setting Up Docker Swarm
+
+- **Decide on the Number of Nodes**: For this example, we’ll use three nodes: one manager node and two worker nodes.
+
+- **Install Docker on All Nodes**:
+  - **Login as Root User** on each instance.
+    ```bash
+    sudo -i
+    ```
+  - **Install Docker**:
+    ```bash
+    yum install docker -y
+    systemctl start docker
+    ```
+
+- **Set Hostnames**:
+  - On the manager node, set the hostname to `manager`.
+    ```bash
+    hostnamectl set-hostname manager
+    ```
+  - On the worker nodes, set the hostnames to `worker1` and `worker2`.
+    ```bash
+    hostnamectl set-hostname worker1
+    hostnamectl set-hostname worker2
+    ```
+
+- **Initialize Docker Swarm on the Manager Node**:
+  ```bash
+  docker swarm init
+  ```
+  - Save the token provided, as it will be used to join worker nodes to the swarm.
+
+
+
+### 2. Deploying the Application on Docker Swarm
+
+- **Create a Docker Service**:
+  - On the manager node, deploy the train booking application with the following command:
+    ```bash
+    docker service create --name train --replicas 6 --publish 82:80 train-booking-app:latest
+    ```
+  - This command will create a service named `train` with 6 replicas, exposing port 82 on the host and mapping it to port 80 in the container.
+
+- **Access the Application**:
+  - The application can be accessed via the public IP address of any of the manager or worker nodes on port 82.
+
 ## Architecture
 
 The deployment architecture includes the following components:
@@ -80,9 +130,6 @@ The deployment architecture includes the following components:
 - **Scaling and Management**: ECS offers more advanced scaling and management capabilities, including automated scaling based on resource utilization.
 - **Ecosystem Integration**: ECS integrates with AWS services like CloudWatch for monitoring, IAM for security, and others, providing a comprehensive cloud-native solution.
 
-
-
 ## Conclusion
 
-This project provided hands-on experience with deploying a scalable and highly available application using AWS ECR and ECS. The integration of these services demonstrates the power of cloud-native architectures in modern software deployment, offering robust solutions for application management and scaling.
-
+This project provided hands-on experience with deploying a scalable and highly available application using AWS ECR and ECS, as well as setting up Docker Swarm for container orchestration. The integration of these services demonstrates the power of cloud-native architectures and containerization technologies in modern software deployment, offering robust solutions for application management and scaling.
